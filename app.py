@@ -137,6 +137,27 @@ def get_address_by_addressID(addressID):
     return rsp
 
 
+@app.route('/addresses/<addressID>/users', methods=["GET", "POST"])
+def get_users_by_address(addressID):
+    try:
+        input = rest_utils.RESTContext(request)
+        if input.method == "GET":
+            res = UserResource.get_by_template({'addressID': addressID})
+            rsp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
+
+        elif input.method == "POST":
+            pass
+
+        else:
+            rsp = Response("Method not implemented", status=501)
+
+    except Exception as e:
+        print(f"Path: '/addresses/<addressID>/users', Error: {e}")
+        rsp = Response("INTERNAL ERROR", status=500, content_type="text/plain")
+
+    return rsp
+
+
 @app.route('/<db_schema>/<table_name>/<column_name>/<prefix>', methods=["GET", "POST"])
 def get_by_prefix(db_schema, table_name, column_name, prefix):
     res = d_service.get_by_prefix(db_schema, table_name, column_name, prefix)
