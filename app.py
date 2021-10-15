@@ -29,8 +29,9 @@ def get_users():
             rsp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
 
         elif input.method == "POST":
-            # create a new user
-            pass
+            data = input.data
+            res = UserResource.add_by_template(data)
+            rsp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
 
         else:
             rsp = Response("Method not implemented", status=501)

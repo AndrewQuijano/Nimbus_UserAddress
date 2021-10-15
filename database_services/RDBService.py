@@ -74,3 +74,30 @@ def find_by_template(db_schema, table_name, template, field_list):
     conn.close()
 
     return res
+
+
+def add_by_template(db_schema, table_name, template):
+    columns = template.keys()
+    columns_string = ', '.join(columns)
+
+    values_string = []
+    for v in template.values():
+        if isinstance(v,int):
+            values_string.append(v)
+        else:
+            values_string.append("'"+v+"'")
+
+    values_string = ", ".join(values_string)
+
+    conn = _get_db_connection()
+    cur = conn.cursor()
+
+    sql = f"insert into {db_schema}.{table_name} ({columns_string})" \
+          f" values ({values_string});"
+    print(sql)
+    print("SQL Statement = " + cur.mogrify(sql, None))
+    res = cur.execute(sql)
+    conn.commit()
+    conn.close()
+
+    return res
