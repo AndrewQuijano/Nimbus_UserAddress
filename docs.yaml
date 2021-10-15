@@ -1,0 +1,458 @@
+openapi: 3.0.0
+servers:
+  - description: Nimbus REST API - User/Address Handling
+    url: https://192.168.0.119:5000
+    # Currently not being hosted anywhere, this is a placeholder
+info:
+  description: This is a simple API for handling users and addresses
+  version: "1.0.0"
+  title: User and Address Handling API
+  contact:
+    - email: aa4634@columbia.edu
+    - email: dhd2124@columbia.edu
+    - email: dh2868@columbia.edu
+    - email: afq2101@columbia.edu
+    - email: ss6166@columbia.edu
+    - email: zbw2104@columbia.edu
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: administrators
+    description: Admin operations
+  - name: developers
+    description: Operations available to regular developers
+paths:
+  /users:
+    get:
+      tags:
+        - developers
+      summary: Resource for creating and viewing users.
+      operationId: getUsers
+      description: |
+        By passing in the appropriate options, you can search for
+        and retrieve information about users.
+      parameters:
+        - in: query
+          name: searchString
+          description: Optional query string in standard format.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/User'
+        '400':
+          description: bad input parameter
+        '500':
+          description: internal error
+    post:
+      tags:
+        - developers
+      summary: creates a user
+      operationId: addUser
+      description: actually creates a user
+      responses:
+        '201':
+          description: item created
+        '400':
+          description: 'invalid input, object invalid'
+        '409':
+          description: Duplicate email
+        '500':
+          description: internal error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        description: User to add, except for ID. Application handles ID.
+  /users/{userId}:
+    put:
+      tags:
+        - developers
+      summary: Updates a user
+      operationId: updateUser
+      description: Updates a user's values. Cannot change ID, obviously
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          description: ID of the user to update.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User updated
+        '400':
+          description: Something bad happened.
+        '404':
+          description: User not found.
+        '500':
+          description: internal error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        description: User to update, except for ID. Application handles ID.
+    get:
+      tags:
+        - developers
+      summary: Gets a user by ID
+      operationId: getUser
+      description: Gets a user.
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          description: ID of the user to get.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User identified by the ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Something bad happened.
+        '404':
+          description: Not found.
+        '500':
+          description: internal error
+    delete:
+      tags:
+        - developers
+      summary: Deletes a user by ID
+      operationId: deleteUser
+      description: Deletes a user.
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          description: ID of the user to delete.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully deleted.
+        '404':
+          description: Not found.
+        '400':
+          description: Something bad happened.
+        '500':
+          description: internal error
+  /users/{userId}/address:
+    post:
+      tags:
+        - developers
+      summary:  Creates the address for the user.
+      operationId: createUserAddress
+      description: creates a new address for a particular user
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          description: ID of the user to update.
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Address created.
+        '400':
+          description: Something bad happened.
+        '404':
+          description: Not found.
+        '500':
+          description: internal error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Address'
+        description: Address information.
+    get:
+      tags:
+        - developers
+      summary: Gets a user's address.
+      operationId: getUserAddress
+      description: returns a user's address
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          description: ID of the user whose address to get.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Address identified by the ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'
+        '400':
+          description: Something bad happened.
+        '404':
+          description: Not found.
+        '500':
+          description: internal error
+  /addresses:
+    get:
+      tags:
+        - developers
+      summary: Resource for creating and viewing addresses.
+      operationId: getAddresses
+      description: |
+        Can view all addresses
+      responses:
+        '200':
+          description: all addresses
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Address'
+        '400':
+          description: bad input parameter
+        '500':
+          description: internal error
+    post:
+      tags:
+        - developers
+      summary: creates an address
+      operationId: addAddress
+      description: actually creates an address
+      responses:
+        '201':
+          description: item created
+        '400':
+          description: 'invalid input, object invalid'
+        '500':
+          description: internal error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Address'
+        description: Address to add
+  /address/{addressId}:
+    put:
+      tags:
+        - developers
+      summary: Updates an address
+      operationId: updateAddress
+      description: Updates an address's values
+      parameters:
+        - in: path
+          name: addressId
+          required: true
+          description: ID of the address to update.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: address updated
+        '400':
+          description: Something bad happened.
+        '404':
+          description: User not found.
+        '500':
+          description: internal error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Address'
+        description: Address to update, except for ID
+    get:
+      tags:
+        - developers
+      summary: Gets an address by ID
+      operationId: getAddress
+      description: Gets an address.
+      parameters:
+        - in: path
+          name: addressId
+          required: true
+          description: ID of the address to get.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Address identified by the ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'
+        '400':
+          description: Something bad happened.
+        '404':
+          description: Not found.
+        '500':
+          description: internal error
+    delete:
+      tags:
+        - developers
+      summary: Deletes an address by ID
+      operationId: deleteAddress
+      description: Deletes a address.
+      parameters:
+        - in: path
+          name: addressId
+          required: true
+          description: ID of the address to delete.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully deleted.
+        '404':
+          description: Not found.
+        '400':
+          description: Something bad happened.
+        '500':
+          description: internal error
+  /addresses/{addressID}/users:
+    post:
+      tags:
+        - developers
+      summary: Creates a user associated with a particular address
+      operationId: createAddressUser
+      description: creates a user associated with a particular address
+      parameters:
+        - in: path
+          name: addressId
+          required: true
+          description: ID of the address to associate with new user.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User created
+        '400':
+          description: Something bad happened.
+        '404':
+          description: Address not found.
+        '500':
+          description: internal error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        description: User to add, except for ID. Application handles ID.
+    get:
+      tags:
+        - developers
+      summary: Gets all users associated with an address
+      operationId: getAddressUsers
+      description: returns all users associated with a particular address
+      parameters:
+        - in: path
+          name: addressId
+          required: true
+          description: ID of the address to get all users from
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Users identified by the addressID
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/User'
+        '400':
+          description: Something bad happened.
+        '404':
+          description: Not found.
+        '500':
+          description: internal error
+components:
+  schemas:
+    User:
+      type: object
+      required:
+        - id
+        - email
+        - nameLast
+        - nameFirst
+        - createdDate
+      properties:
+        id:
+          type: string
+          example: aa4634
+        email:
+          type: string
+          format: email
+          example: aa12345@gmail.com
+        nameLast:
+          type: string
+          example: Smith
+        nameFirst:
+          type: string
+          example: John
+        createdData:
+          type: string
+          format: date-time
+          example: '2016-08-29T09:12:33.001Z'
+        links:
+          $ref: "#/components/schemas/Links"
+    Address:
+      required:
+        - streetNumber
+        - streetName1
+        - streetName2
+        - cityName
+        - regionName
+        - postalCode
+      properties:
+        streetNumber:
+          type: string
+          example: 123
+        streetName1:
+          type: string
+          example: Baker St.
+        streetName2:
+          type: string
+          example: Apt. 2C
+        cityName:
+          type: string
+          example: Podunk
+        regionName:
+          type: string
+          example: East Nowhere
+        postalCode:
+          type: string
+          example: 10027
+        countryName:
+          type: string
+          example: United States of America
+    Link:
+      type: object
+      required:
+        - rel
+        - href
+      properties:
+        rel:
+          type: string
+          example: 'some_relationship'
+        href:
+          type: string
+          format: url
+          example: /some/url
+    Links:
+      type: array
+      items:
+        $ref: "#/components/schemas/Link"
