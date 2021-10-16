@@ -28,3 +28,9 @@ class AddressResource(BaseApplicationResource):
         res = d_service.update_by_template("UserAddress", "Addresses",
                                            update_template, where_template)
         return res
+
+
+    @classmethod
+    def delete_by_template(cls, template):
+        res = d_service.delete_by_template("UserAddress", "Addresses", template)
+        return res

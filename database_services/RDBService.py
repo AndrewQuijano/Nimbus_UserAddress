@@ -125,8 +125,30 @@ def update_by_template(db_schema, table_name, update_template, where_template):
     cur = conn.cursor()
 
     sql = f"UPDATE {db_schema}.{table_name} SET {update_string} WHERE {where_string};"
-    print(sql)
     res = cur.execute(sql)
+    conn.commit()
+    conn.close()
+    return res
+
+
+def delete_by_template(db_schema, table_name, template):
+    where_list = []
+    for k, v in template.items():
+        if isinstance(v, int):
+            where_list.append(f"{k} = {v}")
+        else:
+            where_list.append(f"{k} = '{v}'")
+    where_string = ' AND '.join(where_list)
+
+    conn = _get_db_connection()
+    cur = conn.cursor()
+
+    sql1 = f"DELETE FROM {db_schema}.{table_name} where {where_string};"
+    # sql2 = "SELECT row_count() as no_of_rows_deleted;"
+    cur.execute(sql1)
+    # cur.execute(sql2)
+    # res = cur.fetchone()
+    res = cur.rowcount
     conn.commit()
     conn.close()
     return res

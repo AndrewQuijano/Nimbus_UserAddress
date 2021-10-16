@@ -57,8 +57,8 @@ def get_users_by_userID(userID):
             rsp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
 
         elif input.method == "DELETE":
-            # to delete the user
-            pass
+            res = UserResource.delete_by_template({'ID': userID})
+            rsp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
 
         else:
             rsp = Response("Method not implemented", status=501)
@@ -139,8 +139,8 @@ def get_address_by_addressID(addressID):
             rsp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
 
         elif input.method == "DELETE":
-            # to delete the user
-            pass
+            res = AddressResource.delete_by_template({'ID': addressID})
+            rsp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
 
         else:
             rsp = Response("Method not implemented", status=501)
