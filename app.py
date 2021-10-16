@@ -52,12 +52,13 @@ def get_users_by_userID(userID):
             rsp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
 
         elif input.method == "PUT":
-            # To update the details of the user
-            pass
+            data = input.data
+            res = UserResource.update_by_template(data, {'ID': userID})
+            rsp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
 
         elif input.method == "DELETE":
-            # to delete the user
-            pass
+            res = UserResource.delete_by_template({'ID': userID})
+            rsp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
 
         else:
             rsp = Response("Method not implemented", status=501)
@@ -78,8 +79,10 @@ def get_address_by_userID(userID):
             rsp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
 
         elif input.method == "POST":
-            # To update the details of the user's address
-            pass
+            data = input.data
+            insert_id = AddressResource.add_by_template(data)
+            res = UserResource.update_by_template({'addressID': insert_id}, {'ID': userID})
+            rsp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
 
         else:
             rsp = Response("Method not implemented", status=501)
@@ -100,8 +103,18 @@ def get_addresses():
             rsp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
 
         elif input.method == "POST":
-            # create a new user
-            pass
+            # userID must be present in the POST body,
+            # otherwise there's no entry in the Users table
+            data = input.data
+            if 'userID' in data and data['userID']:
+                userID = data['userID']
+                del data['userID']
+                insert_id = AddressResource.add_by_template(data)
+                res = UserResource.update_by_template({'addressID': insert_id}, {'ID': userID})
+                rsp = Response(json.dumps(insert_id, default=str), status=200, content_type="application/json")
+
+            else:
+                rsp = Response("POST body does not contain 'userID' field")
 
         else:
             rsp = Response("Method not implemented", status=501)
@@ -121,12 +134,13 @@ def get_address_by_addressID(addressID):
             rsp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
 
         elif input.method == "PUT":
-            # To update the details of the user
-            pass
+            data = input.data
+            res = AddressResource.update_by_template(data, {'ID': addressID})
+            rsp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
 
         elif input.method == "DELETE":
-            # to delete the user
-            pass
+            res = AddressResource.delete_by_template({'ID': addressID})
+            rsp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
 
         else:
             rsp = Response("Method not implemented", status=501)
@@ -147,7 +161,10 @@ def get_users_by_address(addressID):
             rsp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
 
         elif input.method == "POST":
-            pass
+            data = input.data
+            data['addressID'] = addressID
+            res = UserResource.add_by_template(data)
+            rsp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
 
         else:
             rsp = Response("Method not implemented", status=501)

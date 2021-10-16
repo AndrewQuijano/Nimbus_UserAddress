@@ -94,10 +94,61 @@ def add_by_template(db_schema, table_name, template):
 
     sql = f"insert into {db_schema}.{table_name} ({columns_string})" \
           f" values ({values_string});"
-    print(sql)
-    print("SQL Statement = " + cur.mogrify(sql, None))
     res = cur.execute(sql)
+    id = conn.insert_id()
     conn.commit()
     conn.close()
 
+    return id
+
+
+def update_by_template(db_schema, table_name, update_template, where_template):
+    update_list = []
+    for k, v in update_template.items():
+        if isinstance(v, int):
+            update_list.append(f"{k} = {v}")
+        else:
+            update_list.append(f"{k} = '{v}'")
+
+    update_string = ', '.join(update_list)
+
+    where_list = []
+    for k, v in where_template.items():
+        if isinstance(v, int):
+            where_list.append(f"{k} = {v}")
+        else:
+            where_list.append(f"{k} = '{v}'")
+
+    where_string = ', '.join(where_list)
+
+    conn = _get_db_connection()
+    cur = conn.cursor()
+
+    sql = f"UPDATE {db_schema}.{table_name} SET {update_string} WHERE {where_string};"
+    res = cur.execute(sql)
+    conn.commit()
+    conn.close()
+    return res
+
+
+def delete_by_template(db_schema, table_name, template):
+    where_list = []
+    for k, v in template.items():
+        if isinstance(v, int):
+            where_list.append(f"{k} = {v}")
+        else:
+            where_list.append(f"{k} = '{v}'")
+    where_string = ' AND '.join(where_list)
+
+    conn = _get_db_connection()
+    cur = conn.cursor()
+
+    sql1 = f"DELETE FROM {db_schema}.{table_name} where {where_string};"
+    # sql2 = "SELECT row_count() as no_of_rows_deleted;"
+    cur.execute(sql1)
+    # cur.execute(sql2)
+    # res = cur.fetchone()
+    res = cur.rowcount
+    conn.commit()
+    conn.close()
     return res
