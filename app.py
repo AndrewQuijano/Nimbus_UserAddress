@@ -52,8 +52,9 @@ def get_users_by_userID(userID):
             rsp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
 
         elif input.method == "PUT":
-            # To update the details of the user
-            pass
+            data = input.data
+            res = UserResource.update_by_template(data, {'ID': userID})
+            rsp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
 
         elif input.method == "DELETE":
             # to delete the user

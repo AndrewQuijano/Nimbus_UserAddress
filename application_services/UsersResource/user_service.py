@@ -39,3 +39,10 @@ class UserResource(BaseApplicationResource):
     def add_by_template(cls, template):
         res = d_service.add_by_template("UserAddress", "Users", template)
         return res
+
+
+    @classmethod
+    def update_by_template(cls, update_template, where_template):
+        res = d_service.update_by_template("UserAddress", "Users",
+                                           update_template, where_template)
+        return res
