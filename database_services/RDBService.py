@@ -98,6 +98,7 @@ def add_by_template(db_schema, table_name, template):
     print("SQL Statement = " + cur.mogrify(sql, None))
     res = cur.execute(sql)
     conn.commit()
+    id = conn.insert_id()
     conn.close()
 
-    return res
+    return id

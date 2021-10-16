@@ -16,3 +16,8 @@ class AddressResource(BaseApplicationResource):
     # def get_by_prefix(cls, prefix):
     #     res = d_service.get_by_prefix("UserAddress", "Addresses", "", prefix)
     #     return res
+
+    @classmethod
+    def add_by_template(cls, template):
+        res = d_service.add_by_template("UserAddress", "Addresses", template)
+        return res
