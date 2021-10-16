@@ -21,3 +21,10 @@ class AddressResource(BaseApplicationResource):
     def add_by_template(cls, template):
         res = d_service.add_by_template("UserAddress", "Addresses", template)
         return res
+
+
+    @classmethod
+    def update_by_template(cls, update_template, where_template):
+        res = d_service.update_by_template("UserAddress", "Addresses",
+                                           update_template, where_template)
+        return res

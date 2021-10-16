@@ -81,7 +81,7 @@ def get_address_by_userID(userID):
         elif input.method == "POST":
             data = input.data
             insert_id = AddressResource.add_by_template(data)
-            # TODO use the method from the put object to update the addressID for the respective userID
+            res = UserResource.update_by_template({'addressID': insert_id}, {'ID': userID})
             rsp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
 
         else:
@@ -110,7 +110,7 @@ def get_addresses():
                 userID = data['userID']
                 del data['userID']
                 insert_id = AddressResource.add_by_template(data)
-                # TODO put method to update users table
+                res = UserResource.update_by_template({'addressID': insert_id}, {'ID': userID})
                 rsp = Response(json.dumps(insert_id, default=str), status=200, content_type="application/json")
 
             else:
@@ -134,8 +134,9 @@ def get_address_by_addressID(addressID):
             rsp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
 
         elif input.method == "PUT":
-            # To update the details of the user
-            pass
+            data = input.data
+            res = AddressResource.update_by_template(data, {'ID': addressID})
+            rsp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
 
         elif input.method == "DELETE":
             # to delete the user

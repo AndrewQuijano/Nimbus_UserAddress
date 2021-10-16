@@ -95,8 +95,8 @@ def add_by_template(db_schema, table_name, template):
     sql = f"insert into {db_schema}.{table_name} ({columns_string})" \
           f" values ({values_string});"
     res = cur.execute(sql)
-    conn.commit()
     id = conn.insert_id()
+    conn.commit()
     conn.close()
 
     return id
