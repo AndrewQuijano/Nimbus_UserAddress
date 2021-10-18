@@ -125,7 +125,7 @@ def get_addresses():
 
     return rsp
 
-@app.route('/address/<addressID>', methods=["GET", "PUT", "DELETE"])
+@app.route('/addresses/<addressID>', methods=["GET", "PUT", "DELETE"])
 def get_address_by_addressID(addressID):
     try:
         input = rest_utils.RESTContext(request)
