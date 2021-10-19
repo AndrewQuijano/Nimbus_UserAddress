@@ -8,12 +8,7 @@ info:
   version: "1.0.0"
   title: User and Address Handling API
   contact:
-    - email: aa4634@columbia.edu
-    - email: dhd2124@columbia.edu
-    - email: dh2868@columbia.edu
-    - email: afq2101@columbia.edu
-    - email: ss6166@columbia.edu
-    - email: zbw2104@columbia.edu
+    email: ss6166@columbia.edu
   license:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
