@@ -16,3 +16,21 @@ class AddressResource(BaseApplicationResource):
     # def get_by_prefix(cls, prefix):
     #     res = d_service.get_by_prefix("UserAddress", "Addresses", "", prefix)
     #     return res
+
+    @classmethod
+    def add_by_template(cls, template):
+        res = d_service.add_by_template("UserAddress", "Addresses", template)
+        return res
+
+
+    @classmethod
+    def update_by_template(cls, update_template, where_template):
+        res = d_service.update_by_template("UserAddress", "Addresses",
+                                           update_template, where_template)
+        return res
+
+
+    @classmethod
+    def delete_by_template(cls, template):
+        res = d_service.delete_by_template("UserAddress", "Addresses", template)
+        return res
