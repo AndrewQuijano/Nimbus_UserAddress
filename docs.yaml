@@ -317,7 +317,7 @@ paths:
           description: Something bad happened.
         '500':
           description: internal error
-  /addresses/{addressID}/users:
+  /addresses/{addressId}/users:
     post:
       tags:
         - developers
@@ -361,7 +361,7 @@ paths:
             type: string
       responses:
         '200':
-          description: Users identified by the addressID
+          description: Users identified by the addressId
           content:
             application/json:
               schema:
