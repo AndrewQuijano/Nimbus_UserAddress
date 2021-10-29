@@ -1,4 +1,5 @@
-from flask import Flask, Response, request, render_template, jsonify
+from flask import Flask, Response, request, render_template, redirect, url_for
+from flask_dance.contrib.google import make_google_blueprint, google
 import database_services.RDBService as d_service
 from flask_cors import CORS
 import json
@@ -18,6 +19,20 @@ from application_services.AddressResource.address_service import AddressResource
 
 app = Flask(__name__)
 CORS(app)
+
+client_id = "333897561549-0gjdajo3ao0gan8g14revpgvvd2cu457.apps.googleusercontent.com"
+client_secret = "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"
+
+blueprint = make_google_blueprint(
+    client_id='YOUR-CLIENT-ID-HERE',
+    client_secret='YOUR-CLIENT-SECRET-HERE',
+    scope=['https://www.googleapis.com/auth/userinfo.email',
+           'https://www.googleapis.com/auth/userinfo.profile'],
+    offline=True,
+    reprompt_consent=True,
+)
+
+app.register_blueprint(blueprint, url_prefix="/userlogin")
 
 
 @app.route('/users', methods=["GET", "POST"])
