@@ -28,6 +28,17 @@ def get_users():
                     rsp = Response(res, status=200, content_type='application/JSON')
                 else:
                     rsp = Response("NOT FOUND", status=404, content_type='text/plain')
+
+            elif inputs.method == 'POST':
+                res = service.create(inputs.data)
+                if res is not None:
+                    values = list(map(str, res.values()))
+                    key = "_".join(values)
+                    headers = {"location": f"/users/{key}"}
+                    rsp = Response("CREATED", status=201, content_type='text/plain', headers=headers)
+                else:
+                    rsp = Response("UNPROCESSABLE ENTITY", status=422, content_type='text/plain')
+
             else:
                 rsp = Response("NOT IMPLEMENTED", status=501)
         else:

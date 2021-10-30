@@ -250,16 +250,22 @@ class RDBDataTable:
 
         q += "(" + s1 + ") "
 
-        v = ["%s"] * len(keys)
-        v = ",".join(v)
+        vs = []
+        for v in row.values():
+            if isinstance(v, int):
+                vs.append(v)
+            else:
+                vs.append("'"+v+"'")
 
-        q += "values(" + v + ")"
+        q += "values(" + ', '.join(vs) + ")"
+        cnx = self._cnx
+        cursor = cnx.cursor()
+        res = cursor.execute(q)
+        id = cnx.insert_id()
+        cnx.commit()
+        cnx.close()
 
-        params = tuple(row.values())
-
-        result = self.run_q(q, params, fetch=False)
-
-        return result
+        return id
 
     def update(self, template, row):
         set_clause, set_args  = self.transfer_json_to_set_clause(row)

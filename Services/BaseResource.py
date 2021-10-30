@@ -10,15 +10,16 @@ class ResourceBase():
             key_columns=config_info.get("key_columns", None),
         )
 
-    def _get_key(self, jto):
+    def _get_key(self, jto, res=None):
         c_info = self._configInfo
         key_cols = c_info.get("key_columns", None)
-
         if key_cols is not None and len(key_cols) > 0:
+            # check if key columns are present in the JSON Transfer Object
+            if len(set(key_cols).intersection(set(jto.keys()))) < len(key_cols):
+                return {"Insertion ID": res}
             result = {k:jto[k] for k in key_cols}
         else:
             result = None
-
         return result
 
     def find_by_template(self, template, fields=None, limit=None, offset=None, order_by=None, context=None):
@@ -45,7 +46,7 @@ class ResourceBase():
 
         result = self._data_table.insert(transfer_json)
         if result:
-            result = self._get_key(transfer_json)
+            result = self._get_key(transfer_json, result)
 
         return result
 
