@@ -202,7 +202,7 @@ class RDBDataTable:
             fields = '*'
         q = "SELECT " + fields + " FROM " + self._table_name + " " + w
 
-        limit = limit if (limit is not None and limit <= _max_rows_to_print) else _max_rows_to_print
+        limit = limit if (limit is not None and int(limit) <= _max_rows_to_print) else _max_rows_to_print
         q += " limit " + str(limit)
 
         offset = offset if (offset is not None) else 0
