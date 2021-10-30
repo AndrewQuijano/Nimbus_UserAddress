@@ -87,6 +87,9 @@ def get_users_by_userID(userID):
             else:
                 rsp = Response("NOT IMPLEMENTED", status=501)
 
+        else:
+            rsp = Response("NOT FOUND", status=404, content_type='text/plain')
+
     except Exception as e:
         print(f"Path: /users/<userID>\nException: {e}")
         rsp = Response("INTERNAL ERROR", status=500, content_type='text/plain')
@@ -94,10 +97,60 @@ def get_users_by_userID(userID):
     return rsp
 
 
+@app.route('/users/<userID>/address', methods=["GET", "POST"])
+def get_address_by_userID(userID):
+    try:
+        inputs = rest_utils.RESTContext(request)
+        service1 = _get_service_by_name("user_service")
+        service2 = _get_service_by_name("address_service")
 
+        if service1 is not None and service2 is not None:
+            args = {}
+            if inputs.args:
+                args = inputs.args
+            args['ID'] = userID
+            res1 = service1.find_by_template(args)
+            # res1 = json.load(res1)
+            if res1 is not None:
+                if inputs.method == "GET":
+                    address_id = res1[0].get('addressID', None)
+                    if address_id is not None:
+                        res2 = service2.find_by_template({'ID': str(address_id)}, inputs.fields)
+                        if res2 is not None:
+                            res2 = json.dumps(res2, default=str)
+                            rsp = Response(res2, status=200, content_type='application/JSON')
+                        else:
+                            rsp = Response("NOT FOUND", status=404, content_type='text/plain')
+                    else:
+                        rsp = Response("No address associated with user", status=404, content_type='text/plain')
 
+                elif inputs.method == "POST":
+                    res = service2.create(inputs.data)
+                    if res is not None:
+                        values = list(map(str, res.values()))
+                        key = "_".join(values)
+                        headers = {"location": f"/users/{userID}/address/{key}"}
+                        rsp = Response("CREATED", status=201, content_type='text/plain', headers=headers)
 
+                        res2 = service1.update(userID, {'addressID': res['Insertion ID']})
+                        rsp = Response("CREATED and UPDATED", status=201, content_type='text/plain', headers=headers)
 
+                    else:
+                        rsp = Response("NOT FOUND", status=404, content_type='text/plain')
+
+                else:
+                    rsp = Response("NOT IMPLEMENTED", status=501)
+
+            else:
+                rsp = Response("NOT FOUND", status=404, content_type='text/plain')
+        else:
+            rsp = Response("NOT FOUND", status=404, content_type='text/plain')
+
+    except Exception as e:
+        print(f"Path: /users/<userID>\nException: {e}")
+        rsp = Response("INTERNAL ERROR", status=500, content_type='text/plain')
+
+    return rsp
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000)
