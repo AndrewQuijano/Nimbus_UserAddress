@@ -24,8 +24,8 @@ class ResourceBase():
 
     def find_by_template(self, template, fields=None, limit=None, offset=None, order_by=None, context=None):
 
-        result = self._data_table.find_by_template(template, fields=fields, limit=limit, offset=offset)
-        return result
+        result, count = self._data_table.find_by_template(template, fields=fields, limit=limit, offset=offset)
+        return result, count
 
     def find_by_primary_key(self, key_column_values, fields=None, context=None):
 

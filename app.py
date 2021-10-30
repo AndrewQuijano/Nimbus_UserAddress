@@ -25,12 +25,10 @@ def get_users():
         service = _get_service_by_name("user_service")
         if service is not None:
             if inputs.method == 'GET':
-                res = service.find_by_template(inputs.args, inputs.fields, inputs.limit, inputs.offset)
-                # print(res)
+                res, total_count = service.find_by_template(inputs.args, inputs.fields, inputs.limit, inputs.offset)
                 if res is not None:
                     res = _generate_user_links(res)
-                    print(service.get_count())
-                    res = _generate_pages(res, inputs, service.get_count())
+                    res = _generate_pages(res, inputs, total_count)
                     res = json.dumps(res, default = str)
                     rsp = Response(res, status=200, content_type='application/JSON')
                 else:
@@ -70,9 +68,10 @@ def get_users_by_userID(userID):
                     args = inputs.args
                 args['ID'] = userID
 
-                res = service.find_by_template(args, inputs.fields) # single user (no limits/offset)
+                res, total_count = service.find_by_template(args, inputs.fields) # single user (no limits/offset)
                 if res is not None:
                     res = _generate_user_links(res)
+                    res = _generate_pages(res, inputs, total_count) # single user
                     res = json.dumps(res, default = str)
                     rsp = Response(res, status=200, content_type='application/JSON')
                 else:
@@ -117,15 +116,16 @@ def get_address_by_userID(userID):
             if inputs.args:
                 args = inputs.args
             args['ID'] = userID
-            res1 = service1.find_by_template(args)
+            res1, count1 = service1.find_by_template(args)
             # res1 = json.load(res1)
             if res1 is not None:
                 if inputs.method == "GET":
                     address_id = res1[0].get('addressID', None)
                     if address_id is not None:
-                        res2 = service2.find_by_template({'ID': str(address_id)}, inputs.fields)
+                        res2, count2 = service2.find_by_template({'ID': str(address_id)}, inputs.fields)
                         if res2 is not None:
                             res2 = _generate_address_links(res2, userID)
+                            res2 = _generate_pages(res2, inputs, count2)
                             res2 = json.dumps(res2, default=str)
                             rsp = Response(res2, status=200, content_type='application/JSON')
                         else:
@@ -169,9 +169,10 @@ def get_addresses():
         service = _get_service_by_name("address_service")
         if service is not None:
             if inputs.method == "GET":
-                res = service.find_by_template(inputs.args, inputs.fields, inputs.limit, inputs.offset)
+                res, count = service.find_by_template(inputs.args, inputs.fields, inputs.limit, inputs.offset)
                 if res is not None:
                     res = _generate_address_links(res)
+                    res = _generate_pages(res, inputs, count)
                     res = json.dumps(res, default=str)
                     rsp = Response(res, status=200, content_type='application/JSON')
                 else:
@@ -212,9 +213,10 @@ def get_address_by_addressID(addressID):
                     args = inputs.args
                 args['ID'] = addressID
 
-                res = service.find_by_template(args, inputs.fields)  # single address (no limits/offset)
+                res, count = service.find_by_template(args, inputs.fields)  # single address (no limits/offset)
                 if res is not None:
                     res = _generate_address_links(res)
+                    res = _generate_pages(res, inputs, count)
                     res = json.dumps(res, default=str)
                     rsp = Response(res, status=200, content_type='application/JSON')
                 else:
@@ -254,9 +256,10 @@ def get_users_by_address(addressID):
         service = _get_service_by_name("user_service")
         if service is not None:
             if inputs.method == 'GET':
-                res = service.find_by_template({'addressID': addressID}, inputs.fields, inputs.limit, inputs.offset)
+                res, count = service.find_by_template({'addressID': addressID}, inputs.fields, inputs.limit, inputs.offset)
                 if res is not None:
                     res = _generate_user_links(res)
+                    res = _generate_pages(res, inputs, count)
                     res = json.dumps(res, default = str)
                     rsp = Response(res, status=200, content_type='application/JSON')
                 else:
@@ -280,7 +283,7 @@ def get_users_by_address(addressID):
             rsp = Response("NOT FOUND", status=404, content_type='text/plain')
 
     except Exception as e:
-        print(f"Path: /users\nException: {e}")
+        print(f"Path: /addresses/<addressID>/users\nException: {e}")
         rsp = Response("INTERNAL ERROR", status=500, content_type='text/plain')
 
     return rsp

@@ -122,8 +122,6 @@ def _generate_pages(res, inputs, total_count):
         prev_url += f"&limit={limit}"
         next_url += f"&limit={limit}"
 
-    print(inputs.offset, inputs.limit, total_count)
-
     if inputs.order_by:
         prev_url += f"&order_by={inputs.order_by}"
         next_url += f"&order_by={inputs.order_by}"
@@ -132,14 +130,16 @@ def _generate_pages(res, inputs, total_count):
     if offset > 0 and offset + limit >= total_count: # no more results
         prev_url += f"&offset={offset-limit}"
         next_url = ""
-    elif offset == 0:
+    elif offset == 0 and offset + limit < total_count:
         next_url += f"&offset={offset+limit}"
+        prev_url = ""
+    elif offset == 0 and offset + limit >= total_count:
+        next_url = ""
         prev_url = ""
     else:
         prev_url += f"&offset={offset - limit}"
         next_url += f"&offset={offset + limit}"
 
-    print(res)
     new_dict = {
         "data": res,
         "links": [

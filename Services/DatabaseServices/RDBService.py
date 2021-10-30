@@ -208,6 +208,10 @@ class RDBDataTable:
 
         q = "SELECT " + fields + " FROM " + self._table_name + " " + w
 
+        count_q = "SELECT COUNT(*) FROM " + self._table_name + " " + w
+        count_run = self.run_q(count_q, args=None, fetch=True)
+        total_count = count_run[0]['COUNT(*)']
+
         limit = limit if (limit is not None and int(limit) <= _max_rows_to_print) else _max_rows_to_print
         q += " limit " + str(limit)
 
@@ -217,7 +221,7 @@ class RDBDataTable:
         r = self.run_q(q, args=None, fetch=True)
         result = r
         # print("Query result = ", r)
-        return result
+        return result, total_count
 
     def find_by_primary_key(self, key, fields):
         key_columns = self.get_key_columns()
