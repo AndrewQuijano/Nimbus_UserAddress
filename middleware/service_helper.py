@@ -52,3 +52,45 @@ def _get_service_by_name(service_name):
 
     else:
         return None
+
+
+
+def _generate_user_links(res):
+    new_res = []
+    for user_dict in res:
+        links = [{
+            "rel": "self",
+            "href": f"/users/{user_dict['ID']}"
+        }]
+        if 'addressID' in user_dict and user_dict['addressID']:
+            links.append({
+                "rel": "address",
+                "href": f"/addresses/{user_dict['addressID']}"
+            })
+        user_dict['links'] = links
+        new_res.append(user_dict)
+
+    return new_res
+
+
+def _generate_address_links(res, userID = None):
+    new_res = []
+    for address_dict in res:
+        links = [{
+            "rel": "self",
+            "href": f"/addresses/{address_dict['ID']}"
+        }]
+        if 'userID' in address_dict and address_dict['userID']:
+            links.append({
+                "rel": "user",
+                "href": f"/users/{address_dict['userID']}"
+            })
+        elif userID is not None:
+            links.append({
+                "rel": "user",
+                "href": f"/users/{userID}"
+            })
+        address_dict['links'] = links
+        new_res.append(address_dict)
+
+    return new_res

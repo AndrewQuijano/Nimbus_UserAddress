@@ -7,7 +7,7 @@ from flask import Flask, Response
 from flask import request, render_template, jsonify
 from flask_cors import CORS
 
-from middleware.service_helper import _get_service_by_name
+from middleware.service_helper import _get_service_by_name, _generate_user_links, _generate_address_links
 
 import utils.rest_utils as rest_utils
 
@@ -24,6 +24,7 @@ def get_users():
             if inputs.method == 'GET':
                 res = service.find_by_template(inputs.args, inputs.fields, inputs.limit, inputs.offset)
                 if res is not None:
+                    res = _generate_user_links(res)
                     res = json.dumps(res, default = str)
                     rsp = Response(res, status=200, content_type='application/JSON')
                 else:
@@ -65,6 +66,7 @@ def get_users_by_userID(userID):
 
                 res = service.find_by_template(args, inputs.fields) # single user (no limits/offset)
                 if res is not None:
+                    res = _generate_user_links(res)
                     res = json.dumps(res, default = str)
                     rsp = Response(res, status=200, content_type='application/JSON')
                 else:
@@ -117,6 +119,7 @@ def get_address_by_userID(userID):
                     if address_id is not None:
                         res2 = service2.find_by_template({'ID': str(address_id)}, inputs.fields)
                         if res2 is not None:
+                            res2 = _generate_address_links(res2, userID)
                             res2 = json.dumps(res2, default=str)
                             rsp = Response(res2, status=200, content_type='application/JSON')
                         else:
@@ -162,6 +165,7 @@ def get_addresses():
             if inputs.method == "GET":
                 res = service.find_by_template(inputs.args, inputs.fields, inputs.limit, inputs.offset)
                 if res is not None:
+                    res = _generate_address_links(res)
                     res = json.dumps(res, default=str)
                     rsp = Response(res, status=200, content_type='application/JSON')
                 else:
@@ -204,6 +208,7 @@ def get_address_by_addressID(addressID):
 
                 res = service.find_by_template(args, inputs.fields)  # single address (no limits/offset)
                 if res is not None:
+                    res = _generate_address_links(res)
                     res = json.dumps(res, default=str)
                     rsp = Response(res, status=200, content_type='application/JSON')
                 else:
@@ -245,6 +250,7 @@ def get_users_by_address(addressID):
             if inputs.method == 'GET':
                 res = service.find_by_template({'addressID': addressID}, inputs.fields, inputs.limit, inputs.offset)
                 if res is not None:
+                    res = _generate_user_links(res)
                     res = json.dumps(res, default = str)
                     rsp = Response(res, status=200, content_type='application/JSON')
                 else:
