@@ -239,6 +239,7 @@ class RDBDataTable:
         cursor.execute(q1)
         cursor.execute(q2)
         result = cursor.fetchone()
+        print(result)
         self._cnx.commit()
         return result
 
@@ -272,7 +273,6 @@ class RDBDataTable:
         where_clause = self.template_to_where_clause(template)
 
         q = "UPDATE  " + self._table_file + " " + set_clause + " " + where_clause
-
         result = self.run_q(q, set_args, fetch=False)
 
         return result

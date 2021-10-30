@@ -51,9 +51,12 @@ class ResourceBase():
         return result
 
     def update(self, key_values, transfer_json, context=None):
+        if not isinstance(key_values, list): #to handle integers
+            key_values = [key_values]
 
+        print(key_values)
         template = dict(zip(self._configInfo.get("key_columns"), key_values))
-
+        print(template)
         result = self._data_table.update(template, transfer_json)
         if result:
             result = self._get_key(template)
