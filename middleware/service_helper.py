@@ -1,6 +1,9 @@
 import os, pymysql
 from Services.AddressService.address_service import AddressService as AddressService
 from Services.UserService.user_service import UserService as UserService
+from middleware import context as ctx
+
+default_limit = ctx.get_context_value("MAX_TABLE_ROWS_TO_PRINT")
 
 def get_db_info():
     db_host = os.environ.get("DBHOST", None)
@@ -94,3 +97,65 @@ def _generate_address_links(res, userID = None):
         new_res.append(address_dict)
 
     return new_res
+
+
+def _generate_pages(res, inputs, total_count):
+    path = inputs.path
+    prev_url = f"{path}?"
+    next_url = f"{path}?"
+
+    args = []
+    for k,v in inputs.args.items():
+        args.append(f"{k}={v}")
+    args = '&'.join(args)
+
+    if args:
+        prev_url += f"{args}"
+        next_url += f"{args}"
+
+    if inputs.fields:
+        prev_url += f"&fields={inputs.fields}"
+        next_url += f"&fields={inputs.fields}"
+
+    limit = int(inputs.limit) if inputs.limit else default_limit
+    if limit:
+        prev_url += f"&limit={limit}"
+        next_url += f"&limit={limit}"
+
+    print(inputs.offset, inputs.limit, total_count)
+
+    if inputs.order_by:
+        prev_url += f"&order_by={inputs.order_by}"
+        next_url += f"&order_by={inputs.order_by}"
+
+    offset = int(inputs.offset) if inputs.offset else 0
+    if offset > 0 and offset + limit >= total_count: # no more results
+        prev_url += f"&offset={offset-limit}"
+        next_url = ""
+    elif offset == 0:
+        next_url += f"&offset={offset+limit}"
+        prev_url = ""
+    else:
+        prev_url += f"&offset={offset - limit}"
+        next_url += f"&offset={offset + limit}"
+
+    print(res)
+    new_dict = {
+        "data": res,
+        "links": [
+            {
+                "rel": "self",
+                "href": inputs.url
+            },
+            {
+                "rel": "next",
+                "href": next_url
+            },
+            {
+                "rel": "prev",
+                "href": prev_url
+            }
+        ]
+    }
+
+    return new_dict

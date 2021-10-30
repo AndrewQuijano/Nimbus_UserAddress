@@ -7,9 +7,12 @@ from flask import Flask, Response
 from flask import request, render_template, jsonify
 from flask_cors import CORS
 
-from middleware.service_helper import _get_service_by_name, _generate_user_links, _generate_address_links
+from middleware.service_helper import _get_service_by_name, _generate_user_links, \
+    _generate_address_links, _generate_pages
 
 import utils.rest_utils as rest_utils
+
+from pprint import pprint
 
 app = Flask(__name__)
 CORS(app)
@@ -23,8 +26,11 @@ def get_users():
         if service is not None:
             if inputs.method == 'GET':
                 res = service.find_by_template(inputs.args, inputs.fields, inputs.limit, inputs.offset)
+                # print(res)
                 if res is not None:
                     res = _generate_user_links(res)
+                    print(service.get_count())
+                    res = _generate_pages(res, inputs, service.get_count())
                     res = json.dumps(res, default = str)
                     rsp = Response(res, status=200, content_type='application/JSON')
                 else:
@@ -82,7 +88,7 @@ def get_users_by_userID(userID):
             elif inputs.method == 'DELETE':
                 res = service.delete({"ID": userID})
                 if res is not None:
-                    rsp = Response(f"Rows Deleted: {res['no_of_rows_deleted']}", status=200, content_type='text/plain')
+                    rsp = Response(f"Rows Deleted: {res['no_of_rows_deleted']}", status=204, content_type='text/plain')
                 else:
                     rsp = Response("NOT FOUND", status=404, content_type='text/plain')
 
@@ -224,7 +230,7 @@ def get_address_by_addressID(addressID):
             elif inputs.method == 'DELETE':
                 res = service.delete({"ID": addressID})
                 if res is not None:
-                    rsp = Response(f"Rows Deleted: {res['no_of_rows_deleted']}", status=200, content_type='text/plain')
+                    rsp = Response(f"Rows Deleted: {res['no_of_rows_deleted']}", status=204, content_type='text/plain')
                 else:
                     rsp = Response("NOT FOUND", status=404, content_type='text/plain')
 

@@ -200,6 +200,12 @@ class RDBDataTable:
         w = self.template_to_where_clause(t)
         if fields is None:
             fields = '*'
+        else: # check if fields is missing key columns
+            key_cols = self.get_primary_key_columns()
+            for k in key_cols:
+                if k not in fields:
+                    fields += f", {k}"
+
         q = "SELECT " + fields + " FROM " + self._table_name + " " + w
 
         limit = limit if (limit is not None and int(limit) <= _max_rows_to_print) else _max_rows_to_print
@@ -278,4 +284,4 @@ class RDBDataTable:
         return result
 
     def get_count(self):
-        self.get_no_of_rows()
+        return self.get_no_of_rows()
