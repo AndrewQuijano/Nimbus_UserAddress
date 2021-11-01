@@ -1,3 +1,4 @@
+import os
 from flask import Flask, Response, request, render_template, redirect, url_for
 from flask_dance.contrib.google import make_google_blueprint, google
 import database_services.RDBService as d_service
@@ -20,19 +21,23 @@ from application_services.AddressResource.address_service import AddressResource
 app = Flask(__name__)
 CORS(app)
 
-client_id = "333897561549-0gjdajo3ao0gan8g14revpgvvd2cu457.apps.googleusercontent.com"
-client_secret = "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"
-
 blueprint = make_google_blueprint(
-    client_id='YOUR-CLIENT-ID-HERE',
-    client_secret='YOUR-CLIENT-SECRET-HERE',
-    scope=['https://www.googleapis.com/auth/userinfo.email',
-           'https://www.googleapis.com/auth/userinfo.profile'],
-    offline=True,
-    reprompt_consent=True,
+    client_id=os.environ.get("OAUTH_ID", None),
+    client_secret=os.environ.get("OAUTH_SECRET", None),
+    scope=["profile", "email"],
+    reprompt_consent=True
 )
 
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "supersekrit")
 app.register_blueprint(blueprint, url_prefix="/userlogin")
+
+@app.route("/")
+def index():
+    if not google.authorized:
+        return redirect(url_for("google.login"))
+    resp = google.get("/oauth2/v1/userinfo")
+    assert resp.ok, resp.text
+    return "You are {email} on Google".format(email=resp.json()["emails"][0]["value"])
 
 
 @app.route('/users', methods=["GET", "POST"])
