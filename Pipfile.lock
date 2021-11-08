@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "20dc1d7b823fec3ff0763b25c101151fcc97ce570b7150258854440b67ee99f5"
+            "sha256": "c0d2e1a9071948d7d90526cf39da6a68e18dbd59184172a95217361613375eea"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -154,11 +154,11 @@
         },
         "flask-dance": {
             "hashes": [
-                "sha256:4495e5045492dd5bb42d0d26bbef833c861ba28b6d16ebf0bdbb091459dc5e0c",
-                "sha256:d3b1d3597512dc0aeae3a0c39c15fe5643fca84b12eef10be6e9894bc13fdef0"
+                "sha256:2a7dc56df69a145ed8130f718cfd29a6974cf95e40413a10dcaa51ad77ac1f2c",
+                "sha256:9eb5a404ef1b06a58aabbe5ac496908bda0482af1cf08e8c00188493405842fd"
             ],
             "index": "pypi",
-            "version": "==5.0.0"
+            "version": "==5.1.0"
         },
         "idna": {
             "hashes": [
@@ -276,10 +276,10 @@
         },
         "pycparser": {
             "hashes": [
-                "sha256:2d475327684562c3a96cc71adf7dc8c4f0565175cf86b6d7a404ff4c771f15f0",
-                "sha256:7582ad22678f0fcd81102833f60ef8d0e57288b6b5fb00323d101be910e35705"
+                "sha256:8ee45429555515e1f6b185e78100aea234072576aa43ab53aefcae078162fca9",
+                "sha256:e644fdec12f7872f86c58ff790da456218b10f863970249516d60a5eaca77206"
             ],
-            "version": "==2.20"
+            "version": "==2.21"
         },
         "pymysql": {
             "hashes": [
@@ -310,6 +310,13 @@
             ],
             "index": "pypi",
             "version": "==1.16.0"
+        },
+        "smartystreets-python-sdk": {
+            "hashes": [
+                "sha256:dd8e17301a7c81f0c42ca4a096b5fb14e3a12fbc44fe831bfd425df66434690f"
+            ],
+            "index": "pypi",
+            "version": "==4.10.2"
         },
         "typing-extensions": {
             "hashes": [
