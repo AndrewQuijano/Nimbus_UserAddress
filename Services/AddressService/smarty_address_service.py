@@ -1,4 +1,4 @@
-from Services.AddressService.address_service import AddressService
+from Services.AddressService.address_service import AddressService, AddressServiceDataTransferObject
 import os
 
 from smartystreets_python_sdk import StaticCredentials, exceptions, ClientBuilder
@@ -29,20 +29,23 @@ class SmartyAddressService(AddressService):
                 cls.candidates_dictionary[r.delivery_point_barcode] = r
 
     @classmethod
+    def create_lookup(cls, dto: AddressServiceDataTransferObject):
+        lookup = StreetLookup()
+        lookup.street = str(dto.streetNo) + ' ' + dto.street_name_1
+        lookup.city = dto.city
+        lookup.state = dto.state
+        lookup.zipcode = dto.zipcode
+        return lookup
+
+    @classmethod
     def look_up(cls, address_dto):
         creds = cls.get_credentials()
         print(creds)
-        client = ClientBuilder(creds).with_licenses(["us-standard-cloud"]).build_us_street_api_client()
-        lookup = StreetLookup()
-        lookup.street = "520 W. 120th Street" #address_dto.street_name_1
-        # lookup.street2 = "closet under the stairs"
-        #lookup.secondary = "APT 2"
-        #lookup.urbanization = ""  # Only applies to Puerto Rico addresses
-        lookup.city = "New York" #address_dto.city
-        lookup.state = "NY" #address_dto.state
-        lookup.zipcode = "10027" #address_dto.zipcode
-        #lookup.candidates = 3
+        client = ClientBuilder(creds).with_licenses(["us-core-cloud"]).build_us_street_api_client()
+        lookup = cls.create_lookup(address_dto)
+        
         client.send_lookup(lookup)
+        print(lookup.result)
 
         try:
             client.send_lookup(lookup)
@@ -53,3 +56,14 @@ class SmartyAddressService(AddressService):
 
         cls.candidates = lookup.result
         cls._set_dictionary()
+        print(cls.candidates_dictionary)
+        if cls.candidates:
+            first_candidate = cls.candidates[0]
+            print("Address is valid. (There is at least one candidate)\n")
+            print("ZIP Code: " + first_candidate.components.zipcode)
+            print("County: " + first_candidate.metadata.county_name)
+            print("Latitude: {}".format(first_candidate.metadata.latitude))
+            print("Longitude: {}".format(first_candidate.metadata.longitude))
+            return True
+        else:
+            return False
