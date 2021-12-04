@@ -17,6 +17,7 @@ PyMySQL = "==1.0.2"
 Werkzeug = "==2.0.1"
 cryptography = "*"
 flask-dance = "*"
+smartystreets-python-sdk = "*"
 
 [requires]
 python_version = "3.6"

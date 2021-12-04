@@ -1,7 +1,6 @@
 import os
 from flask import Flask, Response, request, render_template, redirect, url_for, jsonify
 from flask_dance.contrib.google import make_google_blueprint, google
-import database_services.RDBService as d_service
 from flask_cors import CORS
 import json
 import logging
