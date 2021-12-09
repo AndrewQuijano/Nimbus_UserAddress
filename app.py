@@ -1,11 +1,11 @@
+import os
+from flask import Flask, Response, request, render_template, redirect, url_for, jsonify
+from flask_dance.contrib.google import make_google_blueprint, google
+from flask_cors import CORS
 import json
 import logging
 
 from datetime import datetime
-
-from flask import Flask, Response
-from flask import request, render_template, jsonify
-from flask_cors import CORS
 
 from middleware.service_helper import _get_service_by_name, _generate_user_links, \
     _generate_address_links, _generate_pages
@@ -16,6 +16,24 @@ from pprint import pprint
 
 app = Flask(__name__)
 CORS(app)
+
+blueprint = make_google_blueprint(
+    client_id=os.environ.get("OAUTH_ID", None),
+    client_secret=os.environ.get("OAUTH_SECRET", None),
+    scope=["profile", "email"],
+    reprompt_consent=True
+)
+
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "supersekrit")
+app.register_blueprint(blueprint, url_prefix="/userlogin")
+
+@app.route("/")
+def index():
+    if not google.authorized:
+        return redirect(url_for("google.login"))
+    resp = google.get("/oauth2/v1/userinfo")
+    assert resp.ok, resp.text
+    return "You are {email} on Google".format(email=resp.json()["emails"][0]["value"])
 
 
 @app.route('/users', methods=["GET", "POST"])
